@@ -9,8 +9,7 @@ export interface CartItemForWhatsApp {
 
 // Número do WhatsApp do cliente (formato: 55 + DDD + número)
 // Exemplo: 5511999999999
-export const WHATSAPP_NUMBER = "5511999999999"; // TODO: Substituir pelo número real
-
+export const WHATSAPP_NUMBER = "5548999304456"; // TODO: Substituir pelo número real do cliente
 export const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
