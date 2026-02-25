@@ -1,0 +1,58 @@
+// Prisma Schema - NovaWear Backend
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Produto
+model Product {
+  id          String   @id @default(cuid())
+  handle      String   @unique
+  title       String
+  description String
+  price       Float
+  image       String
+  category    String   @default("camisas")
+  sizes       String   // JSON array: ["P", "M", "G", "GG"]
+  colors      String?  // JSON array: ["Azul", "Branco"]
+  inStock     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems OrderItem[]
+}
+
+// Modelo de Pedido
+model Order {
+  id              String      @id @default(cuid())
+  customerName    String?
+  customerPhone   String
+  customerEmail   String?
+  status          String      @default("pending") // pending, sent_whatsapp, confirmed, shipped, delivered, cancelled
+  total           Float
+  notes           String?
+  whatsappSentAt  DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items OrderItem[]
+}
+
+// Itens do Pedido
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  size      String
+  price     Float   // Preço no momento da compra
+  
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
