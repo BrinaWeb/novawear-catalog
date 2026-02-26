@@ -13,9 +13,12 @@ export const Header = () => {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <ShoppingBag className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Nova<span className="text-primary">Wear</span>
-          </span>
+                          <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-black text-primary leading-none">NW</span>
+                    <span className="text-[10px] font-semibold tracking-[0.2em] text-foreground">NOVA WEAR</span>
+                  </div>
+                </div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
