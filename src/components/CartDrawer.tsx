@@ -39,135 +39,97 @@ export const CartDrawer = () => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <ShoppingCart className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10">
+          <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
           {totalItems > 0 && (
-            <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground border-2 border-background">
+            <Badge className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 h-4 w-4 sm:h-5 sm:w-5 rounded-full p-0 flex items-center justify-center text-[9px] sm:text-[10px] bg-primary text-primary-foreground border-2 border-background">
               {totalItems}
             </Badge>
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
-        <SheetHeader className="flex-shrink-0">
-          <SheetTitle style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Seu Carrinho</SheetTitle>
-          <SheetDescription>
-            {totalItems === 0 ? "Seu carrinho está vazio" : `${totalItems} item${totalItems !== 1 ? 's' : ''} no carrinho`}
+
+      <SheetContent className="w-full sm:w-[400px] md:w-[450px] lg:w-[500px] flex flex-col p-0">
+        <SheetHeader className="px-4 sm:px-6 py-4 sm:py-5 border-b">
+          <SheetTitle className="text-lg sm:text-xl">Carrinho de Compras</SheetTitle>
+          <SheetDescription className="text-xs sm:text-sm">
+            {totalItems === 0 ? "Seu carrinho está vazio" : `${totalItems} ${totalItems === 1 ? "item" : "itens"} no carrinho`}
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col flex-1 pt-6 min-h-0">
+
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
           {items.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <ShoppingCart className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                <p className="text-muted-foreground">Seu carrinho está vazio</p>
-                <p className="text-sm text-muted-foreground/60 mt-1">Adicione camisas para começar!</p>
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <ShoppingCart className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mb-3 sm:mb-4" />
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Adicione produtos ao carrinho para continuar
+              </p>
+            </div>
+          ) : showCheckoutForm ? (
+            <div className="space-y-4 sm:space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm sm:text-base">Nome completo</Label>
+                <Input id="name" placeholder="Seu nome" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="h-10 sm:h-11 text-sm sm:text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm sm:text-base">Telefone (WhatsApp)</Label>
+                <Input id="phone" type="tel" placeholder="(00) 00000-0000" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="h-10 sm:h-11 text-sm sm:text-base" />
+              </div>
+              <div className="bg-muted rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3 mt-4 sm:mt-6">
+                <h4 className="font-semibold text-sm sm:text-base">Resumo do Pedido</h4>
+                {items.map((item) => (
+                  <div key={`${item.id}-${item.size}`} className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-muted-foreground">{item.title} ({item.size}) x{item.quantity}</span>
+                    <span className="font-medium">{formatCurrency(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+                <div className="border-t pt-2 sm:pt-3 flex justify-between font-bold text-sm sm:text-base">
+                  <span>Total</span>
+                  <span className="text-primary">{formatCurrency(totalPrice)}</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 sm:gap-3 pt-2">
+                <Button onClick={handleWhatsAppCheckout} disabled={isLoading} className="w-full bg-green-600 hover:bg-green-700 h-10 sm:h-11 text-sm sm:text-base">
+                  {isLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : <><MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />Finalizar no WhatsApp</>}
+                </Button>
+                <Button variant="outline" onClick={() => setShowCheckoutForm(false)} className="w-full h-9 sm:h-10 text-sm sm:text-base">Voltar ao Carrinho</Button>
               </div>
             </div>
           ) : (
-            <>
-              <div className="flex-1 overflow-y-auto pr-2 min-h-0">
-                <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={`${item.product.id}-${item.size}`} className="flex gap-4 p-3 rounded-xl bg-secondary/30 border border-border/50">
-                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
-                        <img src={item.product.image} alt={item.product.title} className="w-full h-full object-cover" />
+            <div className="space-y-3 sm:space-y-4">
+              {items.map((item) => (
+                <div key={`${item.id}-${item.size}`} className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-card rounded-lg border">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 shrink-0 rounded-md overflow-hidden bg-muted">
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm sm:text-base line-clamp-1">{item.title}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Tamanho: {item.size}</p>
+                    <p className="text-sm sm:text-base font-bold text-primary mt-1 sm:mt-2">{formatCurrency(item.price)}</p>
+                    <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
+                      <div className="flex items-center gap-1 sm:gap-2 border rounded-md">
+                        <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.size, Math.max(1, item.quantity - 1))} className="h-7 w-7 sm:h-8 sm:w-8"><Minus className="h-3 w-3 sm:h-4 sm:w-4" /></Button>
+                        <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-medium">{item.quantity}</span>
+                        <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="h-7 w-7 sm:h-8 sm:w-8"><Plus className="h-3 w-3 sm:h-4 sm:w-4" /></Button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium truncate text-sm">{item.product.title}</h4>
-                        <p className="text-xs text-muted-foreground">Tamanho: {item.size}</p>
-                        <p className="font-semibold text-sm mt-1">
-                          {formatCurrency(item.product.price)}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => removeItem(item.product.id, item.size)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                        <div className="flex items-center gap-1">
-                          <Button variant="outline" size="icon" className="h-6 w-6 rounded-full" onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}>
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="w-6 text-center text-xs font-medium">{item.quantity}</span>
-                          <Button variant="outline" size="icon" className="h-6 w-6 rounded-full" onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}>
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex-shrink-0 space-y-4 pt-4 border-t border-border/50 bg-background">
-                <div className="flex justify-between items-center">
-                  <span className="text-base font-semibold">Total</span>
-                  <span className="text-xl font-bold text-foreground">
-                    {formatCurrency(totalPrice)}
-                  </span>
-                </div>
-
-                {showCheckoutForm ? (
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="customerName" className="text-sm">Seu Nome</Label>
-                      <Input
-                        id="customerName"
-                        placeholder="Digite seu nome"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="customerPhone" className="text-sm">Seu Telefone</Label>
-                      <Input
-                        id="customerPhone"
-                        placeholder="(11) 99999-9999"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        className="flex-1 rounded-full"
-                        onClick={() => setShowCheckoutForm(false)}
-                        disabled={isLoading}
-                      >
-                        Voltar
-                      </Button>
-                      <Button 
-                        onClick={handleWhatsAppCheckout} 
-                        className="flex-1 rounded-full h-12 text-base font-semibold shadow-lg bg-green-600 hover:bg-green-700" 
-                        disabled={isLoading}
-                      >
-                        {isLoading ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <>
-                            <MessageCircle className="w-5 h-5 mr-2" />
-                            Enviar
-                          </>
-                        )}
-                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => removeItem(item.id, item.size)} className="h-7 w-7 sm:h-8 sm:w-8 text-destructive hover:text-destructive hover:bg-destructive/10"><Trash2 className="h-3 w-3 sm:h-4 sm:w-4" /></Button>
                     </div>
                   </div>
-                ) : (
-                  <Button 
-                    onClick={() => setShowCheckoutForm(true)} 
-                    className="w-full rounded-full h-12 text-base font-semibold shadow-lg bg-green-600 hover:bg-green-700" 
-                    size="lg" 
-                    disabled={items.length === 0}
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Finalizar no WhatsApp
-                  </Button>
-                )}
-              </div>
-            </>
+                </div>
+              ))}
+            </div>
           )}
         </div>
+
+        {items.length > 0 && !showCheckoutForm && (
+          <div className="border-t p-4 sm:p-6 space-y-3 sm:space-y-4 bg-background">
+            <div className="flex justify-between items-center">
+              <span className="text-sm sm:text-base font-medium">Total</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">{formatCurrency(totalPrice)}</span>
+            </div>
+            <Button onClick={() => setShowCheckoutForm(true)} className="w-full bg-green-600 hover:bg-green-700 h-10 sm:h-11 md:h-12 text-sm sm:text-base"><MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />Finalizar no WhatsApp</Button>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { type Product } from "@/data/products";
+import type { Product } from "@/data/products";
 import { useCartStore } from "@/stores/cartStore";
 import { formatCurrency } from "@/lib/whatsapp";
 import { toast } from "sonner";
@@ -18,57 +18,76 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!firstVariant) return;
+    
+    if (!firstVariant) {
+      toast.error("Produto sem variantes disponíveis");
+      return;
+    }
+
     addItem({
-      product,
-      variantId: firstVariant.id,
-      variantTitle: firstVariant.title,
+      id: product.id,
+      title: product.title,
       price: firstVariant.price,
-      quantity: 1,
+      image: product.image,
+      size: firstVariant.size,
     });
-    toast.success("Adicionado ao carrinho!", { position: "top-center" });
+
+    toast.success("Produto adicionado ao carrinho!");
   };
 
   return (
-    <Link to={`/produto/${product.handle}`} className="group block">
-      <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden bg-secondary/30">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.title}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <ShoppingCart className="h-12 w-12 text-muted-foreground/30" />
+    <Link 
+      to={`/produto/${product.handle}`}
+      className="group block w-full"
+    >
+      <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+        {/* Container de imagem responsivo com aspect ratio fixo */}
+        <div className="relative w-full aspect-square overflow-hidden bg-muted">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          
+          {/* Badge de categoria - responsivo */}
+          {product.category && (
+            <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+              <span className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium bg-primary text-primary-foreground rounded-full">
+                {product.category}
+              </span>
             </div>
           )}
-          {/* Overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
 
-        {/* Info */}
-        <div className="p-5">
-          <h3 className="font-semibold text-foreground truncate mb-1 group-hover:text-primary transition-colors">
+        {/* Conteúdo com padding fluido */}
+        <div className="flex flex-col flex-1 p-3 sm:p-4 md:p-5">
+          {/* Título com tipografia responsiva */}
+          <h3 className="text-sm sm:text-base md:text-lg font-semibold text-foreground mb-1 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors">
             {product.title}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 min-h-[2.5rem]">
-            {product.description || "Camisa exclusiva Nova Wear"}
+
+          {/* Descrição com line-clamp */}
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-1">
+            {product.description}
           </p>
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-foreground">
-              {formatCurrency(product.price)}
+
+          {/* Footer com preço e botão */}
+          <div className="flex items-center justify-between gap-2 mt-auto">
+            {/* Preço responsivo */}
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">
+              {formatCurrency(firstVariant?.price || 0)}
             </span>
+
+            {/* Botão responsivo */}
             <Button
               size="sm"
-              className="rounded-full shadow-md shadow-primary/20"
               onClick={handleAddToCart}
-              disabled={isLoading || !firstVariant}
+              disabled={isLoading}
+              className="shrink-0 h-8 sm:h-9 md:h-10 px-3 sm:px-4 text-xs sm:text-sm"
             >
-              <ShoppingCart className="h-4 w-4" />
+              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline ml-2">Adicionar</span>
             </Button>
           </div>
         </div>

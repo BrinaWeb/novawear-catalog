@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { handle } = useParams<{ handle: string }>();
-  const product = handle ? getProductByHandle(handle) : undefined;
+  const product = handle ? getProductByHandle(handle) : null;
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore(state => state.addItem);
@@ -19,124 +19,169 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Produto não encontrado</h2>
-            <Link to="/" className="text-primary hover:underline">Voltar à loja</Link>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">
+              Produto não encontrado
+            </h1>
+            <Link to="/">
+              <Button variant="outline" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para loja
+              </Button>
+            </Link>
           </div>
-        </div>
+        </main>
         <Footer />
       </div>
     );
   }
 
-  const selectedVariant = product.variants[selectedVariantIdx];
-  const price = product.price;
-
   const handleAddToCart = () => {
-    if (!selectedVariant || !product) return;
+    const variant = product.variants[selectedVariantIdx];
     addItem({
-      product,
-      variantId: selectedVariant.id,
-      variantTitle: selectedVariant.title,
-      price: selectedVariant.price,
+      id: `${product.id}-${variant.id}`,
+      productId: product.id,
+      title: product.title,
+      variant: variant.title,
+      price: variant.price,
       quantity,
+      image: product.image
     });
-    toast.success("Adicionado ao carrinho!", { position: "top-center" });
+    toast.success(`${quantity}x ${product.title} adicionado ao carrinho!`);
   };
+
+  const selectedVariant = product.variants[selectedVariantIdx];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="flex-1 container mx-auto px-4 md:px-8 py-8 md:py-16">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar à loja
-        </Link>
+      
+      <main className="flex-1">
+        {/* Container responsivo com padding fluido */}
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-10 lg:py-12">
+          
+          {/* Botão voltar - responsivo */}
+          <Link to="/" className="inline-block mb-6 sm:mb-8">
+            <Button 
+              variant="ghost" 
+              className="gap-2 text-sm sm:text-base hover:gap-3 transition-all"
+            >
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden xs:inline">Voltar para loja</span>
+              <span className="xs:hidden">Voltar</span>
+            </Button>
+          </Link>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-          {/* Images */}
-          <div className="space-y-4">
-            <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/30 border border-border/50">
-              {product.image ? (
+          {/* Grid responsivo: 1 coluna (mobile)  2 colunas (lg) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16">
+            
+            {/* Coluna da imagem */}
+            <div className="w-full">
+              <div className="aspect-square rounded-lg overflow-hidden bg-muted/30 sticky top-20 sm:top-24">
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="h-full w-full object-cover"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <ShoppingCart className="h-16 w-16 text-muted-foreground/20" />
+              </div>
+            </div>
+
+            {/* Coluna das informações */}
+            <div className="flex flex-col gap-6 sm:gap-8">
+              
+              {/* Título e preço */}
+              <div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3 sm:mb-4">
+                  {product.title}
+                </h1>
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+                  {formatCurrency(selectedVariant.price)}
+                </p>
+              </div>
+
+              {/* Descrição */}
+              <div>
+                <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3">
+                  Descrição
+                </h2>
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
+                  {product.description}
+                </p>
+              </div>
+
+              {/* Seleção de tamanho */}
+              <div>
+                <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
+                  Tamanho
+                </h2>
+                <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                  {product.variants.map((variant, idx) => (
+                    <button
+                      key={variant.id}
+                      onClick={() => setSelectedVariantIdx(idx)}
+                      className={`
+                        py-3 sm:py-4 px-4 sm:px-6 rounded-lg border-2 
+                        text-sm sm:text-base md:text-lg font-semibold
+                        transition-all duration-200
+                        ${selectedVariantIdx === idx
+                          ? 'border-primary bg-primary text-primary-foreground shadow-md scale-105'
+                          : 'border-border hover:border-primary/50 hover:scale-102'
+                        }
+                      `}
+                    >
+                      {variant.title}
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {/* Details */}
-          <div className="flex flex-col">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              {product.title}
-            </h1>
-            
-            <span className="text-2xl md:text-3xl font-bold text-primary mb-6">
-              {formatCurrency(price)}
-            </span>
-
-            {product.description && (
-              <p className="text-muted-foreground leading-relaxed mb-8">
-                {product.description}
-              </p>
-            )}
-
-            {/* Tamanhos */}
-            <div className="mb-6">
-              <label className="text-sm font-semibold text-foreground mb-3 block">Tamanho</label>
-              <div className="flex flex-wrap gap-2">
-                {product.variants.map((variant, idx) => (
-                  <button
-                    key={variant.id}
-                    onClick={() => setSelectedVariantIdx(idx)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                      idx === selectedVariantIdx
-                        ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
-                        : 'bg-card text-foreground border-border hover:border-primary/50'
-                    }`}
+              {/* Controle de quantidade */}
+              <div>
+                <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
+                  Quantidade
+                </h2>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                    className="h-10 w-10 sm:h-12 sm:w-12"
                   >
-                    {variant.title}
-                  </button>
-                ))}
+                    <Minus className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                  <span className="text-xl sm:text-2xl md:text-3xl font-bold min-w-[3rem] sm:min-w-[4rem] text-center">
+                    {quantity}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="h-10 w-10 sm:h-12 sm:w-12"
+                  >
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Quantity */}
-            <div className="mb-8">
-              <label className="text-sm font-semibold text-foreground mb-3 block">Quantidade</label>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon" className="rounded-full" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="text-lg font-semibold w-8 text-center">{quantity}</span>
-                <Button variant="outline" size="icon" className="rounded-full" onClick={() => setQuantity(q => q + 1)}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              {/* Botão adicionar ao carrinho */}
+              <Button
+                onClick={handleAddToCart}
+                disabled={isCartLoading}
+                size="lg"
+                className="w-full gap-2 sm:gap-3 text-base sm:text-lg md:text-xl py-6 sm:py-7 md:py-8 mt-2 sm:mt-4"
+              >
+                <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+                Adicionar ao Carrinho
+              </Button>
             </div>
-
-            {/* Add to cart */}
-            <Button
-              size="lg"
-              className="rounded-full h-14 text-base font-semibold shadow-lg shadow-primary/20 w-full md:w-auto"
-              onClick={handleAddToCart}
-              disabled={isCartLoading || !selectedVariant}
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Adicionar ao Carrinho
-            </Button>
           </div>
         </div>
       </main>
+      
       <Footer />
     </div>
   );
