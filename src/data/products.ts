@@ -85,3 +85,6 @@ export const products: Product[] = [
     inStock: true,
   },
 ];
+git add .
+git commit -m "Corrigir products.ts e atualizar fotos e precos"
+git push
