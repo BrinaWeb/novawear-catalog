@@ -61,7 +61,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         {/* Conteúdo compacto */}
-        <div className="flex flex-col gap-1.5 px-1">
+        <div className="flex flex-col gap-2 px-3">
           {/* Categoria mobile - texto pequeno */}
           {product.category && (
             <p className="text-[10px] sm:hidden text-gray-500 uppercase tracking-wide">
@@ -70,7 +70,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           )}
           
           {/* Título compacto */}
-          <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
             {product.title}
           </h3>
 
@@ -80,7 +80,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </p>
 
           {/* Preço destacado */}
-          <p className="text-base sm:text-lg font-bold text-gray-900 mb-2">
+          <p className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
             {formatCurrency(firstVariant?.price || 0)}
           </p>
 
@@ -89,7 +89,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             size="sm"
             onClick={handleAddToCart}
             disabled={isLoading}
-            className="w-full h-9 sm:h-10 bg-black hover:bg-gray-800 text-white text-sm"
+            className="w-full h-10 sm:h-11 bg-black hover:bg-gray-800 text-white text-sm"
           >
             <ShoppingCart className="h-4 w-4" />
             <span className="ml-2">Adicionar</span>
