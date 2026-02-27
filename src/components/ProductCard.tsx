@@ -40,56 +40,60 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       to={`/produto/${product.handle}`}
       className="group block w-full"
     >
-      <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-        {/* Container de imagem responsivo com aspect ratio fixo */}
-        <div className="relative w-full aspect-square overflow-hidden bg-muted">
+      <div className="flex flex-col h-full">
+        {/* Container de imagem - ocupa mais espaço */}
+        <div className="relative w-full aspect-square overflow-hidden rounded-lg bg-gray-100 mb-3">
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
           
-          {/* Badge de categoria - responsivo */}
+          {/* Badge de categoria - apenas desktop */}
           {product.category && (
-            <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
-              <span className="inline-block px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium bg-primary text-primary-foreground rounded-full">
+            <div className="absolute top-2 left-2 hidden sm:block">
+              <span className="inline-block px-3 py-1 text-xs font-medium bg-black text-white rounded-full">
                 {product.category}
               </span>
             </div>
           )}
         </div>
 
-        {/* Conteúdo com padding fluido */}
-        <div className="flex flex-col flex-1 p-3 sm:p-4 md:p-5">
-          {/* Título com tipografia responsiva */}
-          <h3 className="text-sm sm:text-base md:text-lg font-semibold text-foreground mb-1 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+        {/* Conteúdo compacto */}
+        <div className="flex flex-col gap-1.5 px-1">
+          {/* Categoria mobile - texto pequeno */}
+          {product.category && (
+            <p className="text-[10px] sm:hidden text-gray-500 uppercase tracking-wide">
+              {product.category}
+            </p>
+          )}
+          
+          {/* Título compacto */}
+          <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
             {product.title}
           </h3>
 
-          {/* Descrição com line-clamp */}
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-1">
+          {/* Descrição apenas desktop */}
+          <p className="hidden md:block text-sm text-gray-600 line-clamp-2 mb-2">
             {product.description}
           </p>
 
-          {/* Footer com preço e botão */}
-          <div className="flex items-center justify-between gap-2 mt-auto">
-            {/* Preço responsivo */}
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">
-              {formatCurrency(firstVariant?.price || 0)}
-            </span>
+          {/* Preço destacado */}
+          <p className="text-base sm:text-lg font-bold text-gray-900 mb-2">
+            {formatCurrency(firstVariant?.price || 0)}
+          </p>
 
-            {/* Botão responsivo */}
-            <Button
-              size="sm"
-              onClick={handleAddToCart}
-              disabled={isLoading}
-              className="shrink-0 h-8 sm:h-9 md:h-10 px-3 sm:px-4 text-xs sm:text-sm"
-            >
-              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline ml-2">Adicionar</span>
-            </Button>
-          </div>
+          {/* Botão compacto */}
+          <Button
+            size="sm"
+            onClick={handleAddToCart}
+            disabled={isLoading}
+            className="w-full h-9 sm:h-10 bg-black hover:bg-gray-800 text-white text-sm"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            <span className="ml-2">Adicionar</span>
+          </Button>
         </div>
       </div>
     </Link>

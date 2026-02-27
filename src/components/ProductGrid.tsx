@@ -19,10 +19,10 @@ export const ProductGrid = () => {
   return (
     <div 
       id="produtos"
-      className="w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6px-3 sm:px-6 lg:px-8 py-6 sm:py-12 md:py-16 lg:py-20"
+            className="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16"
     >
       {/* Grid responsivo com Mobile First */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
         {products.map((product, index) => (
           <motion.div
             key={product.id}
