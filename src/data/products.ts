@@ -87,4 +87,5 @@ export const products: Product[] = [
 
 export function getProductByHandle(handle: string): Product | undefined {
 
-    return products.find(product => product.handle === handle);
+    return products.find(product => product.handle === handle);git add . && git commit -m "Corrigir products.ts - adicionar funcao getProductByHandle" && git push
+    
