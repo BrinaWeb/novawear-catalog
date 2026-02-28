@@ -84,4 +84,7 @@ export const products: Product[] = [
     colors: ["Preto"],
     inStock: true,
   },
-];
+
+export function getProductByHandle(handle: string): Product | undefined {
+
+    return products.find(product => product.handle === handle);
